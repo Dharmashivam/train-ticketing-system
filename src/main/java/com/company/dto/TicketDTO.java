@@ -1,35 +1,37 @@
+// TicketDTO.java
 package com.company.dto;
 
-import com.company.model.Section;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class TicketDTO {
 
-    private Long id;
+    private Long ticketId;
 
-    @NotEmpty(message = "User information is required")
+    @NotNull(message = "User details are required")
     private UserDTO user;
 
-    @NotEmpty(message = "Price paid must be provided")
+    @NotNull(message = "Train details are required")
+    private TrainDTO train;
+
+    @NotNull(message = "Price paid must be provided")
     @Min(value = 0, message = "Price paid must be greater than or equal to 0")
-    private double pricePaid;
+    private Double pricePaid;
 
-    @NotEmpty(message = "Section must be provided")
-    private Section section;
+    private String sectionPreference;
 
-    @NotEmpty(message = "Seat number must be provided")
-    @Min(value = 1, message = "Seat number must be greater than or equal to 1")
     private int seatNumber;
 
-    // Getters and setters
     public Long getId() {
-        return id;
+        return ticketId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long ticketId) {
+        this.ticketId = ticketId;
     }
 
     public UserDTO getUser() {
@@ -40,27 +42,34 @@ public class TicketDTO {
         this.user = user;
     }
 
-    public double getPricePaid() {
+    public Double getPricePaid() {
         return pricePaid;
     }
 
-    public void setPricePaid(double pricePaid) {
+    public TrainDTO getTrain() {
+        return train;
+    }
+
+    public void setTrain(TrainDTO train) {
+        this.train = train;
+    }
+
+    public void setPricePaid(Double pricePaid) {
         this.pricePaid = pricePaid;
     }
 
-    public Section getSection() {
-        return section;
+    public String getSectionPreference() {
+        return sectionPreference;
     }
 
-    public void setSection(Section section) {
-        this.section = section;
-    }
-
-    public int getSeatNumber() {
-        return seatNumber;
+    public void setSectionPreference(String sectionPreference) {
+        this.sectionPreference = sectionPreference;
     }
 
     public void setSeatNumber(int seatNumber) {
-        this.seatNumber = seatNumber;
+        this.seatNumber = seatNumber;    }
+
+    public int getSeatNumber() {
+        return seatNumber;
     }
 }

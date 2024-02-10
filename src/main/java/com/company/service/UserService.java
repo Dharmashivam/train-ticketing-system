@@ -7,4 +7,5 @@ public interface UserService {
     boolean removeUser(Long userId);
     User updateUser(Long userId, User user);
     User getUserById(Long userId);
+    Long getUserIdByEmail(String email);
 }

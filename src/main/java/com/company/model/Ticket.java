@@ -1,12 +1,6 @@
 package com.company.model;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.Valid;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -15,42 +9,53 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Min(value = 1, message = "ID must be greater than 0")
-    private Long id;
+    private Long ticketId;
 
-    @NotNull(message = "User information is required")
-    @Valid
     @ManyToOne
-    @JoinColumn(name = "user_id") // Assuming there's a user_id column in the ticket table
+    @JoinColumn(name = "train_id")
+    private Train train;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @NotNull(message = "Price paid must be provided")
     @Min(value = 0, message = "Price paid must be greater than or equal to 0")
-    private double pricePaid;
+    private Double pricePaid;
 
-    @NotNull(message = "Section must be provided")
-    private Section section;
-
-    @NotNull(message = "Seat number must be provided")
-    @Min(value = 1, message = "Seat number must be greater than or equal to 1")
+    @Column(nullable = false)
     private int seatNumber;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Section  sectionPreference;
 
     public Ticket() {
     }
 
-    public Ticket(User user, double pricePaid, Section section, int seatNumber) {
+    public Ticket(Train train, User user, Double pricePaid, int seatNumber, Section  sectionPreference) {
+        this.train = train;
         this.user = user;
         this.pricePaid = pricePaid;
-        this.section = section;
         this.seatNumber = seatNumber;
+        this.sectionPreference = sectionPreference;
     }
+
 
     public Long getId() {
-        return id;
+        return ticketId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public Train getTrain() {
+        return train;
+    }
+
+    public void setTrain(Train train) {
+        this.train = train;
     }
 
     public User getUser() {
@@ -61,20 +66,12 @@ public class Ticket {
         this.user = user;
     }
 
-    public double getPricePaid() {
+    public Double getPricePaid() {
         return pricePaid;
     }
 
     public void setPricePaid(double pricePaid) {
         this.pricePaid = pricePaid;
-    }
-
-    public Section getSection() {
-        return section;
-    }
-
-    public void setSection(Section section) {
-        this.section = section;
     }
 
     public int getSeatNumber() {
@@ -85,14 +82,15 @@ public class Ticket {
         this.seatNumber = seatNumber;
     }
 
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "id=" + id +
-                ", user=" + user +
-                ", pricePaid=" + pricePaid +
-                ", section=" + section +
-                ", seatNumber=" + seatNumber +
-                '}';
+    public Section  getSectionPreference() {
+        return sectionPreference;
+    }
+
+    public void setSectionPreference(Section sectionPreference) {
+        this.sectionPreference = sectionPreference;
+    }
+
+    public void setPricePaid(Double pricePaid) {
+        this.pricePaid = pricePaid;
     }
 }
