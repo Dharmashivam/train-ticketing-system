@@ -1,4 +1,4 @@
-package main.java.com.company.model;
+package com.company.model;
 
 public enum Section {
     SECTION_A,

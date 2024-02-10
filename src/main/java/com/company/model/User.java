@@ -1,30 +1,36 @@
-package main.java.com.company.model;
+package com.company.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 
 @Entity
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(value = 1, message = "ID must be greater than 0")
     private Long id;
 
-    @NotNull(message = "First name is required")
+    @NotEmpty(message = "First name is required")
     @Size(min = 1, max = 50, message = "First name must be between {min} and {max} characters long")
     private String firstName;
 
-    @NotNull(message = "Last name is required")
+    @NotEmpty(message = "Last name is required")
     @Size(min = 1, max = 50 , message = "Last name must be between {min} and {max} characters long")
     private String lastName;
 
-    @NotNull(message = "Email is required")
+    @NotEmpty(message = "Email is required")
     @Email(message = "Email must be a valid email address")
+    @Column(unique = true)
     private String email;
 
     public User() {
@@ -69,4 +75,28 @@ public class User {
         this.email = email;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, email);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

@@ -1,4 +1,4 @@
-package main.java.com.company.service;
+package com.company.service;
 
 import com.company.model.Ticket;
 

@@ -1,12 +1,10 @@
-package main.java.com.company.service.impl;
+package com.company.service.impl;
 
 import com.company.model.User;
-import main.java.com.company.repository.UserRepository;
-import main.java.com.company.service.UserService;
+import com.company.repository.UserRepository;
+import com.company.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,18 +22,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removeUser(Long userId) {
+    public boolean removeUser(Long userId) {
         userRepository.deleteById(userId);
+        return false;
     }
 
     @Override
-    public Optional<User> updateUser(Long userId, User user) {
+    public User updateUser(Long userId, User user) {
         user.setId(userId);
-        return Optional.ofNullable(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 }

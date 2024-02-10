@@ -1,5 +1,7 @@
-package main.java.com.company.model;
+package com.company.model;
 
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,10 +15,13 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(value = 1, message = "ID must be greater than 0")
     private Long id;
 
     @NotNull(message = "User information is required")
     @Valid
+    @ManyToOne
+    @JoinColumn(name = "user_id") // Assuming there's a user_id column in the ticket table
     private User user;
 
     @NotNull(message = "Price paid must be provided")
@@ -80,4 +85,14 @@ public class Ticket {
         this.seatNumber = seatNumber;
     }
 
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + id +
+                ", user=" + user +
+                ", pricePaid=" + pricePaid +
+                ", section=" + section +
+                ", seatNumber=" + seatNumber +
+                '}';
+    }
 }

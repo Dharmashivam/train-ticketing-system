@@ -1,12 +1,10 @@
-package main.java.com.company.service.impl;
+package com.company.service.impl;
 
 import com.company.model.Ticket;
-import main.java.com.company.repository.TicketRepository;
-import main.java.com.company.service.TicketService;
+import com.company.repository.TicketRepository;
+import com.company.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -29,13 +27,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Optional<Ticket> modifyTicket(Long ticketId, Ticket ticket) {
+    public Ticket modifyTicket(Long ticketId, Ticket ticket) {
         ticket.setId(ticketId);
-        return Optional.ofNullable(ticketRepository.save(ticket));
+        return ticketRepository.save(ticket);
     }
 
     @Override
-    public Optional<Ticket> getTicketDetails(Long ticketId) {
-        return ticketRepository.findById(ticketId);
+    public Ticket getTicketDetails(Long ticketId) {
+        return ticketRepository.findById(ticketId).orElse(null);
     }
 }

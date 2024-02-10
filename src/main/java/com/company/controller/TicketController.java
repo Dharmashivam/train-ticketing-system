@@ -1,20 +1,18 @@
-package main.java.com.company.controller;
+package com.company.controller;
 
-import main.java.com.company.dto.TicketDTO;
-import main.java.com.company.model.Ticket;
-import main.java.com.company.service.TicketService;
+import com.company.dto.TicketDTO;
+import com.company.model.Ticket;
+import com.company.service.TicketService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Optional;
-
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
@@ -31,35 +29,30 @@ public class TicketController {
     @PostMapping
     public ResponseEntity<TicketDTO> purchaseTicket(@Valid @RequestBody TicketDTO ticketDTO) {
         Ticket ticket = convertToEntity(ticketDTO);
-        Optional<Ticket> purchasedTicket = ticketService.purchaseTicket(ticket);
-        return purchasedTicket.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(convertToDto(t)))
-                              .orElse(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        Ticket purchasedTicket = ticketService.purchaseTicket(ticket);
+        TicketDTO responseDTO = convertToDto(purchasedTicket);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @GetMapping("/{ticketId}")
     public ResponseEntity<TicketDTO> getTicketDetails(@PathVariable @Positive(message = "Ticket ID must be a positive integer") Long ticketId) {
-        Optional<Ticket> ticket = ticketService.getTicketDetails(ticketId);
-        return ticket.map(t -> ResponseEntity.ok(convertToDto(t)))
-                    .orElse(ResponseEntity.notFound().build());
+        Optional<Ticket> optionalTicket = Optional.ofNullable(ticketService.getTicketDetails(ticketId));
+        return optionalTicket.map(ticket -> ResponseEntity.ok(convertToDto(ticket)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{ticketId}")
     public ResponseEntity<TicketDTO> modifyTicket(@PathVariable @Positive(message = "Ticket ID must be a positive integer") Long ticketId, @Valid @RequestBody TicketDTO ticketDTO) {
         Ticket ticket = convertToEntity(ticketDTO);
-        Optional<Ticket> modifiedTicket = ticketService.modifyTicket(ticketId, ticket);
-        return modifiedTicket.map(t -> ResponseEntity.ok(convertToDto(t)))
-                              .orElse(ResponseEntity.notFound().build());
+        Ticket modifiedTicket = ticketService.modifyTicket(ticketId, ticket);
+        TicketDTO responseDTO = convertToDto(modifiedTicket);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/{ticketId}")
     public ResponseEntity<Void> cancelTicket(@PathVariable @Positive(message = "Ticket ID must be a positive integer") Long ticketId) {
-        Optional<Ticket> ticket = ticketService.getTicketDetails(ticketId);
-        if (ticket.isPresent()) {
-            ticketService.cancelTicket(ticketId);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        ticketService.cancelTicket(ticketId);
+        return ResponseEntity.noContent().build();
     }
 
     // Method to convert TicketDTO to Ticket entity
