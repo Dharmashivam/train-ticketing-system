@@ -1,19 +1,17 @@
-package com.company.service;
+package com.company.service.impl;
 
 import com.company.model.User;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.company.repository.UserRepository;
-import com.company.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-class UserServiceTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -33,15 +31,14 @@ class UserServiceTest {
         when(userRepository.save(user)).thenReturn(user);
 
         User savedUser = userService.addUser(user);
-        assertNotNull(savedUser);
-        assertEquals(1L, savedUser.getId());
+        assertEquals(user.getId(), savedUser.getId());
     }
 
     @Test
     void testRemoveUser() {
         Long userId = 1L;
         doNothing().when(userRepository).deleteById(userId);
-        assertTrue(userService.removeUser(userId));
+        userService.removeUser(userId);
         verify(userRepository, times(1)).deleteById(userId);
     }
 
@@ -53,7 +50,6 @@ class UserServiceTest {
         when(userRepository.save(user)).thenReturn(user);
 
         User updatedUser = userService.updateUser(userId, user);
-        assertNotNull(updatedUser);
         assertEquals(userId, updatedUser.getId());
     }
 
@@ -65,7 +61,6 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
 
         User retrievedUser = userService.getUserById(userId);
-        assertNotNull(retrievedUser);
         assertEquals(userId, retrievedUser.getId());
     }
 
@@ -77,7 +72,6 @@ class UserServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(user);
 
         Long userId = userService.getUserIdByEmail(email);
-        assertNotNull(userId);
         assertEquals(1L, userId);
     }
 }

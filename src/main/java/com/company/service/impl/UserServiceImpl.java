@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeUser(Long userId) {
         userRepository.deleteById(userId);
-        return false;
+        return true;
     }
 
     @Override

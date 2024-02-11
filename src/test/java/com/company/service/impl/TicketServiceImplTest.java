@@ -1,9 +1,8 @@
-package com.company.service;
+package com.company.service.impl;
 
 import com.company.model.Section;
 import com.company.model.Ticket;
 import com.company.repository.TicketRepository;
-import com.company.service.impl.TicketServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class TicketServiceTest {
+class TicketServiceImplTest {
 
     @Mock
     private TicketRepository ticketRepository;
@@ -47,6 +46,9 @@ class TicketServiceTest {
     @Test
     void testCancelTicket() {
         Long ticketId = 1L;
+        Ticket ticket = new Ticket();
+        ticket.setId(ticketId);
+        when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
         doNothing().when(ticketRepository).deleteById(ticketId);
 
         ticketService.cancelTicket(ticketId);
