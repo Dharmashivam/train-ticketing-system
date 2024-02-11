@@ -2,6 +2,8 @@
 package com.company.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 import javax.validation.constraints.Min;
@@ -13,6 +15,7 @@ public class TicketDTO {
     private Long ticketId;
 
     @NotNull(message = "User details are required")
+    @JsonInclude(Include.NON_NULL)
     private UserDTO user;
 
     @NotNull(message = "Train details are required")

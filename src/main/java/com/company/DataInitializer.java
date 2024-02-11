@@ -18,8 +18,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Train train1 = new Train("Delhi", "Bengaluru", 2, 2);
-        Train train2 = new Train("Chennai", "Mumbai", 2, 2);
+        Train train1 = new Train("Delhi", "Bengaluru", 3, 3);
+        Train train2 = new Train("Chennai", "Mumbai", 3, 3);
 
         trainRepository.save(train1);
         trainRepository.save(train2);

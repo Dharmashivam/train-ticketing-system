@@ -1,15 +1,19 @@
 package com.company.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class TrainDTO {
 
+    @NotEmpty(message = "Train ID is required")
+    @Min(value = 1, message = "Train ID must be a positive number")
     private Long trainId;
 
-    @NotNull(message = "From location must be provided")
+    @NotEmpty(message = "From location must be provided")
     private String fromLocation;
 
-    @NotNull(message = "To location must be provided")
+    @NotEmpty(message = "To location must be provided")
     private String toLocation;
 
     public Long getTrainId() {

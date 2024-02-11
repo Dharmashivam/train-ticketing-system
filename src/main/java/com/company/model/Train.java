@@ -12,18 +12,16 @@ public class Train {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long trainId;
+    private Long id;
 
     private String fromLocation;
 
     private String toLocation;
 
     @Min(value = 0)
-    @Max(value = 2)
     private int sectionASeatCapacity;
 
     @Min(value = 0)
-    @Max(value = 2)
     private int sectionBSeatCapacity;
 
     private int lastAssignedSeatNumberSectionA;
@@ -45,11 +43,11 @@ public class Train {
 
     // Getter and setter methods
     public Long getTrainId() {
-        return trainId;
+        return id;
     }
 
-    public void setTrainId(Long trainId) {
-        this.trainId = trainId;
+    public void setTrainId(Long id) {
+        this.id = id;
     }
 
     public String getFromLocation() {

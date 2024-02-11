@@ -9,9 +9,9 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ticketId;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "train_id")
     private Train train;
 
@@ -28,26 +28,26 @@ public class Ticket {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Section  sectionPreference;
+    private Section  section;
 
     public Ticket() {
     }
 
-    public Ticket(Train train, User user, Double pricePaid, int seatNumber, Section  sectionPreference) {
+    public Ticket(Train train, User user, Double pricePaid, int seatNumber, Section  section) {
         this.train = train;
         this.user = user;
         this.pricePaid = pricePaid;
         this.seatNumber = seatNumber;
-        this.sectionPreference = sectionPreference;
+        this.section = section;
     }
 
 
     public Long getId() {
-        return ticketId;
+        return id;
     }
 
-    public void setId(Long ticketId) {
-        this.ticketId = ticketId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Train getTrain() {
@@ -83,11 +83,11 @@ public class Ticket {
     }
 
     public Section  getSectionPreference() {
-        return sectionPreference;
+        return section;
     }
 
-    public void setSectionPreference(Section sectionPreference) {
-        this.sectionPreference = sectionPreference;
+    public void setSectionPreference(Section section) {
+        this.section = section;
     }
 
     public void setPricePaid(Double pricePaid) {
