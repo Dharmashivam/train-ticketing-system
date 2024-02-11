@@ -119,6 +119,7 @@ public class TicketController {
             return ResponseEntity.badRequest().body(errorMessage.toString());
         } catch (Exception e) {
             // Handle other exceptions
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

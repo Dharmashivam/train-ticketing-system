@@ -70,10 +70,6 @@ public class Ticket {
         return pricePaid;
     }
 
-    public void setPricePaid(double pricePaid) {
-        this.pricePaid = pricePaid;
-    }
-
     public int getSeatNumber() {
         return seatNumber;
     }

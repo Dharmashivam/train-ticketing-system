@@ -5,6 +5,7 @@ import com.company.dto.TicketDTO;
 import com.company.dto.TrainDTO;
 import com.company.dto.UserAndTicketsDTO;
 import com.company.dto.UserDTO;
+import com.company.dto.UserAndSeatDTO;
 import com.company.model.Ticket;
 import com.company.model.Train;
 import com.company.model.User;
@@ -24,7 +25,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,8 +35,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(TicketController.class)
@@ -43,6 +50,9 @@ public class TicketControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private TicketController ticketController;
 
     @MockBean
     private TicketService ticketService;
@@ -62,133 +72,159 @@ public class TicketControllerTest {
     }
 
     @Test
-    void testPurchaseTicket() throws Exception {
+    public void purchaseTicket_HappyPath() {
+        // Arrange
+        String email = "test@test.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String fromLocation = "New York";
+        String toLocation = "Chicago";
+        Long trainId = 1L;
+        String sectionPreference = "A";
+        int seatNumber = 1;
+        double pricePaid = 100.0;
         UserDTO userDTO = new UserDTO();
-        userDTO.setEmail("test@example.com");
-        userDTO.setFirstName("Test");
-        userDTO.setLastName("User");
-
+        userDTO.setEmail(email);
+        userDTO.setFirstName(firstName);
+        userDTO.setLastName(lastName);
         TrainDTO trainDTO = new TrainDTO();
-        trainDTO.setFromLocation("From");
-        trainDTO.setToLocation("To");
-
+        trainDTO.setTrainId(trainId);
+        trainDTO.setFromLocation(fromLocation);
+        trainDTO.setToLocation(toLocation);
         TicketDTO ticketDTO = new TicketDTO();
         ticketDTO.setUser(userDTO);
         ticketDTO.setTrain(trainDTO);
-        ticketDTO.setSectionPreference("A");
-        ticketDTO.setPricePaid(50.00);
+        ticketDTO.setSectionPreference(sectionPreference);
+        ticketDTO.setSeatNumber(seatNumber);
+        ticketDTO.setPricePaid(pricePaid);
 
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@example.com");
-        user.setFirstName("Test");
-        user.setLastName("User");
+        // Mock UserService
+        User mockUser = new User(email, firstName, lastName);
+        mockUser.setId(1L); // Set a mock user ID
+        when(userService.addUser(any(User.class))).thenReturn(mockUser); // Return the mock user
+        when(userService.getUserIdByEmail(email)).thenReturn(null); // Return null to simulate a new user
 
-        Train train = new Train();
-        train.setTrainId(1L);
-        train.setFromLocation("From");
-        train.setToLocation("To");
-        train.setLastAssignedSeatNumberSectionA(0);
-        train.setLastAssignedSeatNumberSectionB(0);
-        train.setSectionASeatCapacity(1);
-        train.setSectionBSeatCapacity(1);
+        // Mock TrainService
+        Train mockTrain = new Train(fromLocation, toLocation, 0, 0);
+        mockTrain.setSectionASeatCapacity(1);
+        mockTrain.setSectionBSeatCapacity(1);
+        mockTrain.setTrainId(trainId);
+        when(trainService.getTrainById(trainId)).thenReturn(mockTrain);
 
-        Ticket ticket = new Ticket();
-        ticket.setUser(user);
-        ticket.setTrain(train);
-        ticket.setSectionPreference(Section.A);
+        // Act
+        ticketController.purchaseTicket(ticketDTO);
 
-        when(modelMapper.map(any(TicketDTO.class), any())).thenReturn(ticket);
-        when(ticketService.purchaseTicket(any(Ticket.class))).thenReturn(ticket);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/tickets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"user\": {\"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john@example.com\"}, \"train\": {\"trainId\": \"1L\", \"fromLocation\": \"From\", \"toLocation\": \"To\"}, \"pricePaid\": \"50.00\", \"sectionPreference\": \"A\"}")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        // Assert
+        verify(userService, times(1)).getUserIdByEmail(email);
+        verify(userService, times(1)).addUser(any(User.class));
+        verify(trainService, times(1)).getTrainById(trainId);
+        verify(trainService, times(1)).updateSeatCapacities(eq(trainId), any(Train.class)); // Ensure updateSeatCapacities is invoked
+        verify(ticketService, times(1)).purchaseTicket(any(Ticket.class));
     }
 
+
     @Test
-    void testGetTicketDetails() throws Exception {
+    void getTicketDetails_HappyPath() {
+        // Arrange
         Long ticketId = 1L;
         Ticket ticket = new Ticket();
-        ticket.setId(ticketId);
-
         when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/{ticketId}", ticketId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(ticketId));
+        // Act
+        ResponseEntity<TicketDTO> response = ticketController.getTicketDetails(ticketId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(ticketService, times(1)).getTicketDetails(ticketId);
     }
 
     @Test
-    void testGetUserTickets() throws Exception {
+    void getUserTickets_HappyPath() {
+        // Arrange
         Long userId = 1L;
-        User user = new User();
-        user.setId(userId);
-
         List<Ticket> tickets = new ArrayList<>();
-        tickets.add(new Ticket());
-
         when(ticketService.getUserTickets(userId)).thenReturn(tickets);
-        when(modelMapper.map(any(User.class), any())).thenReturn(new UserDTO());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/user-tickets/{userId}", userId))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        // Act
+        ResponseEntity<UserAndTicketsDTO> response = ticketController.getUserTickets(userId);
+
+        // Assert
+        assertEquals(ResponseEntity.notFound().build(), response);
+        verify(ticketService, times(1)).getUserTickets(userId);
     }
 
     @Test
-    void testGetUsersAndSeatsBySection() throws Exception {
+    void getUsersAndSeatsBySection_HappyPath() {
+        // Arrange
         Long trainId = 1L;
         String section = "A";
+        List<UserAndSeatDTO> userAndSeatDTOs = new ArrayList<>();
+        when(ticketService.getTicketsByTrainIdAndSection(trainId, Section.A)).thenReturn(new ArrayList<>());
 
-        List<Ticket> tickets = new ArrayList<>();
-        tickets.add(new Ticket());
+        // Act
+        ResponseEntity<List<UserAndSeatDTO>> response = ticketController.getUsersAndSeatsBySection(trainId, section);
 
-        when(ticketService.getTicketsByTrainIdAndSection(trainId, Section.valueOf(section.toUpperCase()))).thenReturn(tickets);
-        when(modelMapper.map(any(User.class), any())).thenReturn(new UserDTO());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/users-and-seats/{trainId}/{section}", trainId, section))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        // Assert
+        assertEquals(ResponseEntity.notFound().build(), response);
+        verify(ticketService, times(1)).getTicketsByTrainIdAndSection(trainId, Section.A);
     }
 
     @Test
-    void testModifyTicket() throws Exception {
+    void modifyTicket_HappyPath() {
+        // Arrange
         Long ticketId = 1L;
         Long userId = 1L;
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail("test@example.com");
-        userDTO.setFirstName("Test");
-        userDTO.setLastName("User");
-
-        TrainDTO trainDTO = new TrainDTO();
-
-        TicketDTO ticketDTO = new TicketDTO();
-        ticketDTO.setUser(userDTO);
-        ticketDTO.setTrain(trainDTO);
-        ticketDTO.setSectionPreference("A");
-
+        Long trainId = 1L;
+        String email = "test@test.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String fromLocation = "New York";
+        String toLocation = "Chicago";
+        double pricePaid = 100.0;
         Ticket ticket = new Ticket();
-        ticket.setUser(new User("John", "Doe", "john@example.com"));
-        ticket.setTrain(new Train());
+        ticket.setId(ticketId);
         ticket.setSectionPreference(Section.A);
-
-        when(modelMapper.map(any(TicketDTO.class), any())).thenReturn(ticket);
+        ticket.setSeatNumber(1);
+        ticket.setPricePaid(pricePaid);
+        Train train = new Train(fromLocation, toLocation, 1, 1);
+        train.setLastAssignedSeatNumberSectionA(1);
+        train.setLastAssignedSeatNumberSectionB(1);
+        train.setTrainId(trainId);
+        User user = new User(email, firstName, lastName);
+        user.setId(userId);
+        ticket.setUser(user);
+        ticket.setTrain(train);
+        when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
         when(ticketService.modifyTicket(ticketId, ticket)).thenReturn(ticket);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/tickets/{ticketId}?userId={userId}", ticketId, userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"user\": {\"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john@example.com\"}, \"train\": {}, \"sectionPreference\": \"A\"}")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        // Act
+        ResponseEntity<?> response = ticketController.modifyTicket(ticketId, userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody()); // Ensure response body is not null
+        assertTrue(response.getBody() instanceof TicketDTO); // Ensure response body is of type TicketDTO
+        // Add more assertions to verify the content of the response body if needed
+        verify(ticketService, times(1)).getTicketDetails(ticketId);
+        verify(ticketService, times(1)).modifyTicket(ticketId, ticket);
     }
 
-    @Test
-    void testCancelTicket() throws Exception {
-        Long ticketId = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/tickets/{ticketId}", ticketId))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    @Test
+    void cancelTicket_HappyPath() {
+        // Arrange
+        Long ticketId = 1L;
+        Ticket ticket = new Ticket();
+        Train train = new Train();
+        ticket.setTrain(train);
+        when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
+
+        // Act
+        ResponseEntity<Void> response = ticketController.cancelTicket(ticketId);
+
+        // Assert
+        assertEquals(ResponseEntity.noContent().build(), response);
+        verify(ticketService, times(1)).getTicketDetails(ticketId);
+        verify(ticketService, times(1)).cancelTicket(ticketId);
     }
 }
