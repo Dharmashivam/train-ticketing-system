@@ -3,6 +3,7 @@ package com.company.controller;
 import com.company.config.TestConfig;
 import com.company.dto.UserDTO;
 import com.company.model.User;
+import com.company.service.TicketService;
 import com.company.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,9 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private TicketService ticketService;
 
     @Mock
     private ModelMapper modelMapper;

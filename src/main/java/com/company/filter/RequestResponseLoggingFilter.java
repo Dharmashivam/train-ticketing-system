@@ -16,13 +16,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Log the request
         logRequest(request);
-
-        // Proceed with the request
         filterChain.doFilter(request, response);
-
-        // Log the response
         logResponse(response);
     }
 

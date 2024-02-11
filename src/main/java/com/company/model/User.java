@@ -7,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
@@ -42,7 +41,6 @@ public class User {
         this.email = email;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -90,13 +88,4 @@ public class User {
         return Objects.hash(firstName, lastName, email);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

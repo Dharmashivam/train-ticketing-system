@@ -2,7 +2,6 @@ package com.company.dto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 public class TrainDTO {
 

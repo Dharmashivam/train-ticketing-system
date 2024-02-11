@@ -5,7 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Max;
 
 @Entity
 public class Train {
@@ -29,7 +28,6 @@ public class Train {
     private int lastAssignedSeatNumberSectionB;
 
     public Train() {
-        // Default constructor
     }
 
     public Train(String fromLocation, String toLocation, int sectionASeatCapacity, int sectionBSeatCapacity) {
@@ -41,7 +39,6 @@ public class Train {
         this.lastAssignedSeatNumberSectionB = 0;
     }
 
-    // Getter and setter methods
     public Long getTrainId() {
         return id;
     }

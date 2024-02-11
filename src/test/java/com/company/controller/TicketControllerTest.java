@@ -16,7 +16,6 @@ import com.company.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
@@ -26,15 +25,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -111,10 +106,10 @@ public class TicketControllerTest {
         mockTrain.setTrainId(trainId);
         when(trainService.getTrainById(trainId)).thenReturn(mockTrain);
 
-        // Act
+
         ticketController.purchaseTicket(ticketDTO);
 
-        // Assert
+
         verify(userService, times(1)).getUserIdByEmail(email);
         verify(userService, times(1)).addUser(any(User.class));
         verify(trainService, times(1)).getTrainById(trainId);
@@ -125,53 +120,50 @@ public class TicketControllerTest {
 
     @Test
     void getTicketDetails_HappyPath() {
-        // Arrange
+
         Long ticketId = 1L;
         Ticket ticket = new Ticket();
         when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
 
-        // Act
         ResponseEntity<TicketDTO> response = ticketController.getTicketDetails(ticketId);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(ticketService, times(1)).getTicketDetails(ticketId);
     }
 
     @Test
     void getUserTickets_HappyPath() {
-        // Arrange
+
         Long userId = 1L;
         List<Ticket> tickets = new ArrayList<>();
         when(ticketService.getUserTickets(userId)).thenReturn(tickets);
 
-        // Act
+
         ResponseEntity<UserAndTicketsDTO> response = ticketController.getUserTickets(userId);
 
-        // Assert
         assertEquals(ResponseEntity.notFound().build(), response);
         verify(ticketService, times(1)).getUserTickets(userId);
     }
 
     @Test
     void getUsersAndSeatsBySection_HappyPath() {
-        // Arrange
+
         Long trainId = 1L;
         String section = "A";
         List<UserAndSeatDTO> userAndSeatDTOs = new ArrayList<>();
         when(ticketService.getTicketsByTrainIdAndSection(trainId, Section.A)).thenReturn(new ArrayList<>());
 
-        // Act
+
         ResponseEntity<List<UserAndSeatDTO>> response = ticketController.getUsersAndSeatsBySection(trainId, section);
 
-        // Assert
+
         assertEquals(ResponseEntity.notFound().build(), response);
         verify(ticketService, times(1)).getTicketsByTrainIdAndSection(trainId, Section.A);
     }
 
     @Test
     void modifyTicket_HappyPath() {
-        // Arrange
+
         Long ticketId = 1L;
         Long userId = 1L;
         Long trainId = 1L;
@@ -197,14 +189,12 @@ public class TicketControllerTest {
         when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
         when(ticketService.modifyTicket(ticketId, ticket)).thenReturn(ticket);
 
-        // Act
         ResponseEntity<?> response = ticketController.modifyTicket(ticketId, userId);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody()); // Ensure response body is not null
-        assertTrue(response.getBody() instanceof TicketDTO); // Ensure response body is of type TicketDTO
-        // Add more assertions to verify the content of the response body if needed
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof TicketDTO);
+
         verify(ticketService, times(1)).getTicketDetails(ticketId);
         verify(ticketService, times(1)).modifyTicket(ticketId, ticket);
     }
@@ -212,19 +202,15 @@ public class TicketControllerTest {
 
     @Test
     void cancelTicket_HappyPath() {
-        // Arrange
         Long ticketId = 1L;
         Ticket ticket = new Ticket();
         Train train = new Train();
         ticket.setTrain(train);
         when(ticketService.getTicketDetails(ticketId)).thenReturn(ticket);
 
-        // Act
         ResponseEntity<Void> response = ticketController.cancelTicket(ticketId);
 
-        // Assert
         assertEquals(ResponseEntity.noContent().build(), response);
-        verify(ticketService, times(1)).getTicketDetails(ticketId);
         verify(ticketService, times(1)).cancelTicket(ticketId);
     }
 }

@@ -47,7 +47,8 @@ class TicketServiceTest {
     @Test
     void testCancelTicket() {
         Long ticketId = 1L;
-        doNothing().when(ticketRepository).deleteById(ticketId);
+        Ticket ticket = new Ticket();
+        when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
 
         ticketService.cancelTicket(ticketId);
 

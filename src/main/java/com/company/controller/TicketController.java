@@ -285,38 +285,12 @@ public class TicketController {
     @DeleteMapping("/{ticketId}")
     public ResponseEntity<Void> cancelTicket(@PathVariable @Positive(message = "Ticket ID must be a positive integer") Long ticketId) {
         try {
-            // Retrieve the ticket to be cancelled
-            Optional<Ticket> optionalTicket = Optional.ofNullable(ticketService.getTicketDetails(ticketId));
-            if (optionalTicket.isEmpty()) {
-                return ResponseEntity.notFound().build(); // Ticket not found
-            }
-
-            Ticket ticket = optionalTicket.get();
-            Train train = ticket.getTrain();
-
-            // Increase the seat capacity based on the cancelled ticket's section
-            Section section = ticket.getSectionPreference();
-            if (section == Section.A) {
-                train.setSectionASeatCapacity(train.getSectionASeatCapacity() + 1);
-                train.setLastAssignedSeatNumberSectionA(train.getLastAssignedSeatNumberSectionA() - 1);
-            } else if (section == Section.B) {
-                train.setSectionBSeatCapacity(train.getSectionBSeatCapacity() + 1);
-                train.setLastAssignedSeatNumberSectionB(train.getLastAssignedSeatNumberSectionB() - 1);
-            }
-
-            // Update the train with the modified seat capacities and last assigned seat numbers
-            trainService.updateSeatCapacities(train.getTrainId(), train);
-
-            // Delete the ticket
             ticketService.cancelTicket(ticketId);
-
             return ResponseEntity.noContent().build(); // Ticket cancelled successfully
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Error occurred while cancelling the ticket
         }
     }
-
-
 
     // Method to convert TicketDTO to Ticket entity
     private Ticket convertToEntity(TicketDTO ticketDTO) {
@@ -356,7 +330,6 @@ public class TicketController {
         return userAndSeatDTO;
     }
 
-    // Exception handler method to handle validation errors
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public ResponseEntity<String> handleValidationExceptions(Exception ex) {
         StringBuilder errorMessage = new StringBuilder();

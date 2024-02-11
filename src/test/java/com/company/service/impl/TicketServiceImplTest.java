@@ -50,9 +50,7 @@ class TicketServiceImplTest {
         ticket.setId(ticketId);
         when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
         doNothing().when(ticketRepository).deleteById(ticketId);
-
         ticketService.cancelTicket(ticketId);
-
         verify(ticketRepository, times(1)).deleteById(ticketId);
     }
 

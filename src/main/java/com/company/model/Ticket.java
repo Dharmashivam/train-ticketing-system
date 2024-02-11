@@ -41,7 +41,6 @@ public class Ticket {
         this.section = section;
     }
 
-
     public Long getId() {
         return id;
     }
